@@ -1,0 +1,6 @@
+# Conversation/data dumps — never publish
+zhengala-summary
+
+# OS / editor cruft
+.DS_Store
+*.swp

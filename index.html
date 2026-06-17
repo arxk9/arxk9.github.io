@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alan Zheng</title>
+  <style>
+    /* ── Reset & Variables ── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0d1117;
+      --bg2: #161b22;
+      --bg3: #1c2333;
+      --text: #e6edf3;
+      --text-dim: #8b949e;
+      --accent: #58a6ff;
+      --accent2: #3fb950;
+      --border: #30363d;
+      --max-w: 900px;
+      --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      --mono: 'SF Mono', 'Fira Code', monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+    #geo-bg {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 0; pointer-events: none; opacity: .45;
+    }
+    nav, section, footer, .scroll-top { position: relative; z-index: 1; }
+    a { color: var(--accent); text-decoration: none; transition: opacity .2s; }
+    a:hover { opacity: .8; }
+    ::selection { background: var(--accent); color: var(--bg); }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(13,17,23,.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .nav-inner {
+      max-width: var(--max-w); margin: 0 auto; padding: .75rem 1.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    nav .logo { font-weight: 700; font-size: 1.1rem; color: var(--text); }
+    nav .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    nav .nav-links a { color: var(--text-dim); font-size: .9rem; transition: color .2s; }
+    nav .nav-links a:hover { color: var(--text); opacity: 1; }
+    .hamburger { display: none; background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; }
+
+    /* ── Sections ── */
+    section { max-width: var(--max-w); margin: 0 auto; padding: 5rem 1.5rem 2rem; }
+    .section-title {
+      font-size: 1.6rem; font-weight: 700; margin-bottom: 2rem;
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .section-title::before { content: ''; width: 4px; height: 1.6rem; background: var(--accent); border-radius: 2px; }
+
+    /* ── Hero ── */
+    #hero {
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+      padding-top: 4rem;
+    }
+    #hero .greeting { color: var(--accent); font-family: var(--mono); font-size: .95rem; margin-bottom: .5rem; }
+    #hero h1 { font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: .75rem; }
+    #hero .tagline { font-size: 1.25rem; color: var(--text-dim); max-width: 550px; margin-bottom: 2rem; }
+    .social-links { display: flex; gap: 1rem; }
+    .social-links a {
+      display: inline-flex; align-items: center; gap: .4rem;
+      color: var(--text-dim); font-size: .9rem; padding: .4rem .8rem;
+      border: 1px solid var(--border); border-radius: 6px; transition: all .2s;
+    }
+    .social-links a:hover { color: var(--text); border-color: var(--accent); opacity: 1; }
+    .social-links svg { width: 16px; height: 16px; fill: currentColor; }
+
+    /* ── Fade-in animation ── */
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Experience ── */
+    .exp-item { margin-bottom: 2.5rem; }
+    .exp-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: .25rem; margin-bottom: .25rem; }
+    .exp-role { font-size: 1.1rem; font-weight: 600; }
+    .exp-company { color: var(--accent); }
+    .exp-date { color: var(--text-dim); font-size: .85rem; }
+    .exp-loc { color: var(--text-dim); font-size: .85rem; margin-bottom: .5rem; }
+    .exp-item ul { padding-left: 1.25rem; }
+    .exp-item li { margin-bottom: .4rem; color: var(--text-dim); font-size: .95rem; }
+    .exp-item li::marker { color: var(--accent); }
+
+    /* ── Projects ── */
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+    .project-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 1.5rem; transition: transform .2s, border-color .2s;
+      display: flex; flex-direction: column;
+    }
+    .project-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+    .project-card .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: .75rem; }
+    .project-card h3 { font-size: 1.05rem; font-weight: 600; }
+    .project-card .arrow { color: var(--text-dim); font-size: 1.1rem; transition: transform .2s; }
+    .project-card:hover .arrow { transform: translate(3px, -3px); color: var(--accent); }
+    .project-card p { color: var(--text-dim); font-size: .9rem; flex: 1; margin-bottom: 1rem; }
+    .project-card .featured { color: var(--accent2); font-family: var(--mono); font-size: .75rem; margin-bottom: .5rem; }
+    .tags { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .tags span {
+      font-family: var(--mono); font-size: .75rem; color: var(--text-dim);
+      background: var(--bg3); padding: .2rem .5rem; border-radius: 4px;
+    }
+
+    /* ── Languages (EXP bars) ── */
+    .lang-list { display: flex; flex-direction: column; gap: .75rem; }
+    .lang-item { display: flex; align-items: center; gap: .75rem; cursor: pointer; position: relative; }
+    .lang-item .lang-name { width: 90px; font-size: .9rem; font-family: var(--mono); color: var(--text); flex-shrink: 0; }
+    .lang-bar-bg {
+      flex: 1; height: 10px; background: var(--bg3); border-radius: 5px; overflow: hidden;
+      position: relative; transition: height .2s;
+    }
+    .lang-item:hover .lang-bar-bg { height: 14px; }
+    .lang-bar {
+      height: 100%; border-radius: 5px; width: 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 1s ease;
+    }
+    .lang-item .lang-lines {
+      width: 80px; font-size: .75rem; color: var(--text-dim); text-align: right; font-family: var(--mono);
+      transition: color .2s;
+    }
+    .lang-item:hover .lang-lines { color: var(--accent); }
+    .lang-tooltip {
+      position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 6px;
+      padding: .4rem .7rem; font-size: .8rem; color: var(--text); font-family: var(--mono);
+      white-space: nowrap; pointer-events: none;
+      opacity: 0; transition: opacity .2s; z-index: 10;
+    }
+    .lang-tooltip::after {
+      content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+      border: 5px solid transparent; border-top-color: var(--border);
+    }
+    .lang-item:hover .lang-tooltip { opacity: 1; }
+
+    /* ── Skills (tools) ── */
+    .skills-group { margin-bottom: 2rem; }
+    .skills-group h3 {
+      font-size: .9rem; color: var(--text-dim); text-transform: uppercase;
+      letter-spacing: .05em; margin-bottom: .75rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .skills-group h3 .cat-icon { font-size: 1.1rem; }
+    .tool-cloud {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: .6rem;
+    }
+    .tool-chip {
+      font-size: .85rem; padding: .5rem .75rem; border-radius: 8px;
+      color: var(--text); cursor: default; text-align: center;
+      border: 1px solid transparent;
+      opacity: 0; transform: translateY(16px) rotateX(15deg);
+      transition: opacity .4s ease, transform .4s ease, box-shadow .3s, border-color .3s;
+    }
+    .tool-chip.pop { opacity: 1; transform: translateY(0) rotateX(0); }
+    .tool-chip:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 6px 20px rgba(0,0,0,.3); }
+    .tool-chip.cat-ai { background: rgba(139,92,246,.15); border-color: rgba(139,92,246,.3); }
+    .tool-chip.cat-ai:hover { border-color: #8b5cf6; box-shadow: 0 6px 20px rgba(139,92,246,.2); }
+    .tool-chip.cat-aws { background: rgba(251,146,60,.12); border-color: rgba(251,146,60,.25); }
+    .tool-chip.cat-aws:hover { border-color: #fb923c; box-shadow: 0 6px 20px rgba(251,146,60,.2); }
+    .tool-chip.cat-perf { background: rgba(52,211,153,.12); border-color: rgba(52,211,153,.25); }
+    .tool-chip.cat-perf:hover { border-color: #34d399; box-shadow: 0 6px 20px rgba(52,211,153,.2); }
+    .tool-chip.cat-infra { background: rgba(96,165,250,.12); border-color: rgba(96,165,250,.25); }
+    .tool-chip.cat-infra:hover { border-color: #60a5fa; box-shadow: 0 6px 20px rgba(96,165,250,.2); }
+    .tool-chip.cat-fw { background: rgba(244,114,182,.12); border-color: rgba(244,114,182,.25); }
+    .tool-chip.cat-fw:hover { border-color: #f472b6; box-shadow: 0 6px 20px rgba(244,114,182,.2); }
+    .tool-chip.cat-sec { background: rgba(248,113,113,.12); border-color: rgba(248,113,113,.25); }
+    .tool-chip.cat-sec:hover { border-color: #f87171; box-shadow: 0 6px 20px rgba(248,113,113,.2); }
+
+    /* ── Education ── */
+    .edu-item { margin-bottom: 1.5rem; }
+    .edu-item h3 { font-size: 1.05rem; font-weight: 600; }
+    .edu-item .degree { color: var(--accent); font-size: .95rem; }
+    .edu-item .details { color: var(--text-dim); font-size: .9rem; }
+    .courses-toggle {
+      background: none; border: 1px solid var(--border); color: var(--text-dim);
+      font-size: .8rem; padding: .3rem .7rem; border-radius: 4px; cursor: pointer;
+      margin-top: .5rem; transition: border-color .2s, color .2s; font-family: var(--mono);
+    }
+    .courses-toggle:hover { border-color: var(--accent); color: var(--text); }
+    .courses-list {
+      max-height: 0; overflow: hidden; transition: max-height .4s ease;
+      margin-top: .5rem;
+    }
+    .courses-list.open { max-height: 500px; }
+    .courses-list ul { padding-left: 1.25rem; columns: 2; column-gap: 2rem; }
+    .courses-list li { color: var(--text-dim); font-size: .85rem; margin-bottom: .3rem; break-inside: avoid; }
+    .courses-list li::marker { color: var(--accent); }
+    @media (max-width: 640px) { .courses-list ul { columns: 1; } }
+
+    /* ── Contact ── */
+    #contact { text-align: center; padding-bottom: 4rem; }
+    #contact p { color: var(--text-dim); max-width: 450px; margin: 0 auto 1.5rem; }
+    .cta {
+      display: inline-block; padding: .75rem 2rem; border: 1px solid var(--accent);
+      color: var(--accent); border-radius: 6px; font-size: 1rem;
+      transition: background .2s, color .2s;
+    }
+    .cta:hover { background: var(--accent); color: var(--bg); opacity: 1; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center; padding: 2rem 1.5rem; border-top: 1px solid var(--border);
+      color: var(--text-dim); font-size: .8rem;
+    }
+    footer .footer-links { display: flex; justify-content: center; gap: 1rem; margin-bottom: .75rem; }
+    footer .footer-links a { color: var(--text-dim); }
+    footer .footer-links a:hover { color: var(--text); }
+    footer .footer-links svg { width: 20px; height: 20px; fill: currentColor; }
+
+    /* ── Scroll-to-top ── */
+    .scroll-top {
+      position: fixed; bottom: 2rem; right: 2rem; width: 40px; height: 40px;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-dim); font-size: 1.2rem; cursor: pointer;
+      display: none; align-items: center; justify-content: center;
+      transition: border-color .2s, color .2s;
+    }
+    .scroll-top.show { display: flex; }
+    .scroll-top:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Mobile ── */
+    @media (max-width: 640px) {
+      #hero h1 { font-size: 2rem; }
+      #hero .tagline { font-size: 1.05rem; }
+      .nav-links { display: none !important; }
+      .nav-links.open {
+        display: flex !important; flex-direction: column;
+        position: absolute; top: 100%; left: 0; right: 0;
+        background: var(--bg); border-bottom: 1px solid var(--border);
+        padding: 1rem 1.5rem; gap: 1rem;
+      }
+      .hamburger { display: block; }
+      .exp-header { flex-direction: column; }
+      .projects-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="geo-bg"></canvas>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <a href="#hero" class="logo">AZ</a>
+    <button class="hamburger" aria-label="Menu">☰</button>
+    <ul class="nav-links">
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <p class="greeting">Hi, I'm</p>
+  <h1>Alan Zheng.</h1>
+  <p class="tagline">Software engineer building secure, high-performance distributed systems at AWS. Interested in systems programming, security, ML, and mathematics.</p>
+  <div class="social-links">
+    <a href="https://github.com/arxk9" target="_blank">
+      <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+    <a href="https://www.linkedin.com/in/arxk9" target="_blank">
+      <svg viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 01.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>
+      LinkedIn
+    </a>
+  </div>
+</section>
+
+<!-- Experience -->
+<section id="experience">
+  <h2 class="section-title">Experience</h2>
+
+  <div class="exp-item fade-in">
+    <div class="exp-header">
+      <span class="exp-role">SDE II · <span class="exp-company">Amazon Web Services, IAM Authentication</span></span>
+      <span class="exp-date">Aug 2023 – Present</span>
+    </div>
+    <p class="exp-loc">Seattle, WA</p>
+    <ul>
+      <li>Built core authentication APIs for a next-generation distributed auth system in Rust, achieving full feature parity with legacy Java services.</li>
+      <li>Led migration of authentication traffic across 11 global regions to a sharded data architecture with zero customer impact.</li>
+      <li>Drove performance optimizations including jemalloc, connection warming pools, TLS session resumption, allocation reduction, and logging improvements that improved p50 latency by 30% under peak load. Led profiling efforts using CodeGuru and aperf to identify bottlenecks across zonal deployments.</li>
+      <li>Implemented end-to-end client authentication between frontend and backend services with SigV4 signing, caching, parallel execution, and shadow-mode rollout.</li>
+      <li>Built a security scanner daemon that proactively detects data consistency vulnerabilities. 50+ issues found, now a mandatory validation gate for feature releases.</li>
+      <li>Designed a unit testing framework with custom macros and factory traits for the Rust codebase, improving code coverage by 15% and accelerating feature development.</li>
+      <li>Built an AWS Bedrock-powered tool translating natural language to complex database queries, saving 40+ manual operational hours annually.</li>
+      <li>Created a Rust CLI ops tool for pipeline health monitoring, aperf performance benchmarking with S3 storage and run comparison, and host-level diagnostics.</li>
+    </ul>
+  </div>
+
+  <div class="exp-item fade-in">
+    <div class="exp-header">
+      <span class="exp-role">SDE Intern · <span class="exp-company">Amazon Web Services, IAM Authentication</span></span>
+      <span class="exp-date">May 2021 & May 2022 (two summers)</span>
+    </div>
+    <p class="exp-loc">Seattle, WA</p>
+    <ul>
+      <li>Built a CLI debugging tool for on-call engineers to diagnose IAM policy evaluation issues in production.</li>
+      <li>Designed a DynamoDB-backed bootstrap rate limiter with metrics and deployment scripts to reduce unnecessary maintenance load during fleet scaling.</li>
+    </ul>
+  </div>
+
+  <div class="exp-item fade-in">
+    <div class="exp-header">
+      <span class="exp-role">Teaching Assistant & Tutor · <span class="exp-company">UVA Engineering</span></span>
+      <span class="exp-date">Sep 2021 – May 2023</span>
+    </div>
+    <p class="exp-loc">Charlottesville, VA</p>
+    <ul>
+      <li>Graded exams and held office hours for the cryptocurrency technologies course.</li>
+      <li>Tutored students in linear algebra, vector calculus, machine learning, and data structures.</li>
+    </ul>
+  </div>
+
+  <div class="exp-item fade-in">
+    <div class="exp-header">
+      <span class="exp-role">Data Science Intern · <span class="exp-company">Noblis</span></span>
+      <span class="exp-date">Jun 2020 – Feb 2021</span>
+    </div>
+    <p class="exp-loc">Reston, VA</p>
+    <ul>
+      <li>Built lightweight NLP tools for context tagging and word sense disambiguation.</li>
+    </ul>
+  </div>
+
+  <div class="exp-item fade-in">
+    <div class="exp-header">
+      <span class="exp-role">Research Assistant · <span class="exp-company">GMU Learning Agents Center</span></span>
+      <span class="exp-date">Jun 2018 – Aug 2018</span>
+    </div>
+    <p class="exp-loc">Fairfax, VA</p>
+    <ul>
+      <li>Improved a tool for evidence-based detection of Advanced Persistent Threats.</li>
+    </ul>
+  </div>
+
+  <div class="exp-item fade-in">
+    <div class="exp-header">
+      <span class="exp-role">Student Leader · <span class="exp-company">Youth Building Bridges</span></span>
+      <span class="exp-date">Mar 2017 – Jul 2017</span>
+    </div>
+    <p class="exp-loc">Zhangye, Gan'su, China</p>
+    <ul>
+      <li>Traveled to a rural village in China, teaching local students English, science, and technology.</li>
+    </ul>
+  </div>
+
+  <div class="exp-item fade-in">
+    <div class="exp-header">
+      <span class="exp-role">Assistant / Substitute Teacher · <span class="exp-company">Hope Chinese School</span></span>
+      <span class="exp-date">Sep 2013 – Jun 2016</span>
+    </div>
+    <p class="exp-loc">Annandale, VA</p>
+    <ul>
+      <li>Taught an average of 15 elementary and middle school students per class in mathematics and computer science.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- Projects -->
+<section id="projects">
+  <h2 class="section-title">Projects</h2>
+  <div class="projects-grid">
+
+    <a href="https://tinyurl.com/hju89ekh" target="_blank" class="project-card fade-in" style="text-decoration:none;color:inherit;">
+      <div class="card-top">
+        <h3>Multiplayer Tetris with RL</h3>
+        <span class="arrow">↗</span>
+      </div>
+      <p class="featured">★ Featured</p>
+      <p>Trained multi-agent RL agents using Deep Q-Learning with shared parameters and joint state modeling in a custom multiplayer Tetris environment. Achieved 87% win rate vs. single-agent baseline.</p>
+      <div class="tags">
+        <span>Python</span><span>PyTorch</span><span>Deep Q-Learning</span><span>MARL</span>
+      </div>
+    </a>
+
+    <div class="project-card fade-in">
+      <div class="card-top">
+        <h3>Rust Ops CLI Tool</h3>
+        <span class="arrow">↗</span>
+      </div>
+      <p class="featured">★ Featured</p>
+      <p>Built a Rust CLI for pipeline health monitoring, aperf performance benchmarking with S3 storage and run comparison, host scanning, and deployment diagnostics. Used daily by the team.</p>
+      <div class="tags">
+        <span>Rust</span><span>AWS S3</span><span>CLI</span><span>Ops Tooling</span>
+      </div>
+    </div>
+
+    <div class="project-card fade-in">
+      <div class="card-top">
+        <h3>Standup Slack Bot</h3>
+        <span class="arrow">↗</span>
+      </div>
+      <p>Multi-channel Slack bot for standup management with channel registration, admin controls, weekday-only rotation scheduling, and configurable announcements.</p>
+      <div class="tags">
+        <span>Python</span><span>Slack API</span><span>DynamoDB</span><span>Lambda</span>
+      </div>
+    </div>
+
+    <div class="project-card fade-in">
+      <div class="card-top">
+        <h3>Gogh Get Paper</h3>
+        <span class="arrow">↗</span>
+      </div>
+      <p>Web app generating wallpapers and landscapes based on artistic style and genre preferences. Led data collection and GAN model development.</p>
+      <div class="tags">
+        <span>Python</span><span>PyTorch</span><span>GAN</span><span>Web</span>
+      </div>
+    </div>
+
+    <a href="https://swarm.sites.tjhsst.edu/" target="_blank" class="project-card fade-in" style="text-decoration:none;color:inherit;">
+      <div class="card-top">
+        <h3>Drone Swarm Research</h3>
+        <span class="arrow">↗</span>
+      </div>
+      <p>Reinforcement learning model controlling a swarm of rescue drones in unknown environments. Produced a research paper and live drone demonstration.</p>
+      <div class="tags">
+        <span>Python</span><span>RL</span><span>ROS</span><span>Vicon</span>
+      </div>
+    </a>
+
+    <div class="project-card fade-in">
+      <div class="card-top">
+        <h3>Shop With Space</h3>
+        <span class="arrow">↗</span>
+      </div>
+      <p>HooHacks Best Health Hack. Web app analyzing satellite and streetlight data to inform users about foot traffic at nearby stores.</p>
+      <div class="tags">
+        <span>Flask</span><span>React</span><span>Google APIs</span><span>Python</span>
+      </div>
+    </div>
+
+    <div class="project-card fade-in">
+      <div class="card-top">
+        <h3>MIT Battlecode</h3>
+        <span class="arrow">↗</span>
+      </div>
+      <p>Created a game agent in JavaScript to play a multiplayer strategy game. Placed top 7 in Sprint Round and top 25 in Qualifying Round.</p>
+      <div class="tags">
+        <span>JavaScript</span><span>AI</span><span>Game Theory</span>
+      </div>
+    </div>
+
+    <div class="project-card fade-in">
+      <div class="card-top">
+        <h3>Moolah</h3>
+        <span class="arrow">↗</span>
+      </div>
+      <p>Hackathon project. A natural language chatbot to help users manage budgets through approachable texting interactions using NLP.</p>
+      <div class="tags">
+        <span>Python</span><span>NLP</span><span>Chatbot</span>
+      </div>
+    </div>
+
+    <div class="project-card fade-in">
+      <div class="card-top">
+        <h3>Movies4U</h3>
+        <span class="arrow">↗</span>
+      </div>
+      <p>A recommender system on the MovieLens datasets using matrix factorization by singular value decomposition.</p>
+      <div class="tags">
+        <span>Python</span><span>SVD</span><span>Recommender Systems</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Skills -->
+<section id="skills">
+  <h2 class="section-title">Skills</h2>
+
+  <div class="skills-group fade-in">
+    <h3>Languages</h3>
+    <div class="lang-list">
+      <div class="lang-item"><span class="lang-name">Rust</span><div class="lang-bar-bg"><div class="lang-bar" data-width="95"></div></div><span class="lang-lines">50k+ lines</span><span class="lang-tooltip">Primary language at AWS since 2024. Auth routing service, ops CLI, data tools.</span></div>
+      <div class="lang-item"><span class="lang-name">Python</span><div class="lang-bar-bg"><div class="lang-bar" data-width="90"></div></div><span class="lang-lines">30k+ lines</span><span class="lang-tooltip">ML projects, Slack bot, NLP tools, scripting, data science.</span></div>
+      <div class="lang-item"><span class="lang-name">Java</span><div class="lang-bar-bg"><div class="lang-bar" data-width="90"></div></div><span class="lang-lines">30k+ lines</span><span class="lang-tooltip">Auth backend services, security scanner, integ tests, Spring.</span></div>
+      <div class="lang-item"><span class="lang-name">JavaScript</span><div class="lang-bar-bg"><div class="lang-bar" data-width="70"></div></div><span class="lang-lines">10k+ lines</span><span class="lang-tooltip">React apps, web projects, MIT Battlecode agent.</span></div>
+      <div class="lang-item"><span class="lang-name">C++</span><div class="lang-bar-bg"><div class="lang-bar" data-width="70"></div></div><span class="lang-lines">10k+ lines</span><span class="lang-tooltip">Algorithms, graphics, systems programming.</span></div>
+      <div class="lang-item"><span class="lang-name">C</span><div class="lang-bar-bg"><div class="lang-bar" data-width="45"></div></div><span class="lang-lines">2.5k+ lines</span><span class="lang-tooltip">Operating systems, low-level systems projects.</span></div>
+      <div class="lang-item"><span class="lang-name">HTML/CSS</span><div class="lang-bar-bg"><div class="lang-bar" data-width="45"></div></div><span class="lang-lines">2.5k+ lines</span><span class="lang-tooltip">Web apps, this portfolio, tool dashboards.</span></div>
+      <div class="lang-item"><span class="lang-name">R</span><div class="lang-bar-bg"><div class="lang-bar" data-width="45"></div></div><span class="lang-lines">2.5k+ lines</span><span class="lang-tooltip">Statistical modeling, data visualization.</span></div>
+      <div class="lang-item"><span class="lang-name">Ruby</span><div class="lang-bar-bg"><div class="lang-bar" data-width="40"></div></div><span class="lang-lines">2.5k+ lines</span><span class="lang-tooltip">Apollo deployment scripts, config automation.</span></div>
+      <div class="lang-item"><span class="lang-name">SQL</span><div class="lang-bar-bg"><div class="lang-bar" data-width="30"></div></div><span class="lang-lines">1k+ lines</span><span class="lang-tooltip">Database design, operational queries.</span></div>
+      <div class="lang-item"><span class="lang-name">Bash</span><div class="lang-bar-bg"><div class="lang-bar" data-width="35"></div></div><span class="lang-lines">1k+ lines</span><span class="lang-tooltip">Deployment scripts, ops automation, pipeline tools.</span></div>
+      <div class="lang-item"><span class="lang-name">Swift</span><div class="lang-bar-bg"><div class="lang-bar" data-width="20"></div></div><span class="lang-lines">500+ lines</span><span class="lang-tooltip">iOS app projects.</span></div>
+      <div class="lang-item"><span class="lang-name">MATLAB</span><div class="lang-bar-bg"><div class="lang-bar" data-width="20"></div></div><span class="lang-lines">500+ lines</span><span class="lang-tooltip">Numerical methods, signal processing.</span></div>
+    </div>
+  </div>
+
+  <div class="skills-group fade-in">
+    <h3><span class="cat-icon">🧠</span> AI / ML</h3>
+    <div class="tool-cloud">
+      <span class="tool-chip cat-ai">PyTorch</span><span class="tool-chip cat-ai">TensorFlow</span><span class="tool-chip cat-ai">Transformers</span><span class="tool-chip cat-ai">OpenCV</span>
+      <span class="tool-chip cat-ai">spaCy</span><span class="tool-chip cat-ai">scikit-learn</span><span class="tool-chip cat-ai">NumPy</span><span class="tool-chip cat-ai">Pandas</span>
+    </div>
+  </div>
+
+  <div class="skills-group fade-in">
+    <h3><span class="cat-icon">☁️</span> AWS</h3>
+    <div class="tool-cloud">
+      <span class="tool-chip cat-aws">IAM</span><span class="tool-chip cat-aws">Lambda</span><span class="tool-chip cat-aws">EC2</span><span class="tool-chip cat-aws">S3</span><span class="tool-chip cat-aws">DynamoDB</span>
+      <span class="tool-chip cat-aws">SQS</span><span class="tool-chip cat-aws">SNS</span><span class="tool-chip cat-aws">VPC</span><span class="tool-chip cat-aws">Bedrock</span><span class="tool-chip cat-aws">SageMaker</span>
+    </div>
+  </div>
+
+  <div class="skills-group fade-in">
+    <h3><span class="cat-icon">⚡</span> Systems & Security</h3>
+    <div class="tool-cloud">
+      <span class="tool-chip cat-perf">CodeGuru</span><span class="tool-chip cat-perf">Aperf</span><span class="tool-chip cat-perf">Jemalloc</span><span class="tool-chip cat-perf">Tokio Console</span><span class="tool-chip cat-perf">Perf</span><span class="tool-chip cat-perf">Flamegraphs</span><span class="tool-chip cat-perf">Heap Profiling</span><span class="tool-chip cat-perf">Latency Analysis</span>
+      <span class="tool-chip cat-perf">TLS / mTLS</span><span class="tool-chip cat-perf">SigV4</span><span class="tool-chip cat-perf">ECDSA</span><span class="tool-chip cat-perf">HMAC</span><span class="tool-chip cat-perf">X.509</span><span class="tool-chip cat-perf">Cipher Suites</span>
+    </div>
+  </div>
+
+  <div class="skills-group fade-in">
+    <h3><span class="cat-icon">🔧</span> DevOps & Tools</h3>
+    <div class="tool-cloud">
+      <span class="tool-chip cat-infra">Docker</span><span class="tool-chip cat-infra">GitHub Actions</span><span class="tool-chip cat-infra">Jenkins</span><span class="tool-chip cat-infra">Travis CI</span>
+      <span class="tool-chip cat-infra">Tokio</span><span class="tool-chip cat-infra">Django</span><span class="tool-chip cat-infra">React</span><span class="tool-chip cat-infra">Flask</span>
+      <span class="tool-chip cat-infra">ROS</span><span class="tool-chip cat-infra">Git</span><span class="tool-chip cat-infra">Postman</span>
+    </div>
+  </div>
+</section>
+
+<!-- Education -->
+<section id="education">
+  <h2 class="section-title">Education</h2>
+
+  <div class="edu-item fade-in">
+    <h3>University of Washington</h3>
+    <p class="degree">MS in Computer Science & Engineering</p>
+    <p class="details">Expected May 2026 · GPA: 4.0</p>
+    <button class="courses-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.nextElementSibling.classList.contains('open') ? '▾ Hide Courses' : '▸ Show Courses';">▸ Show Courses</button>
+    <div class="courses-list">
+      <ul>
+        <li>Deep Learning</li>
+        <li>LLMs</li>
+        <li>Artificial Intelligence</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="edu-item fade-in">
+    <h3>University of Virginia</h3>
+    <p class="degree">BS in Computer Science</p>
+    <p class="details">May 2023 · GPA: 3.982 · Minors: Applied Mathematics, Data Science</p>
+    <button class="courses-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.nextElementSibling.classList.contains('open') ? '▾ Hide Courses' : '▸ Show Courses';">▸ Show Courses</button>
+    <div class="courses-list">
+      <ul>
+        <li>Machine Learning</li>
+        <li>Reinforcement Learning</li>
+        <li>Computer Vision</li>
+        <li>Natural Language Processing</li>
+        <li>Algorithms</li>
+        <li>Data Structures</li>
+        <li>Operating Systems</li>
+        <li>Cloud Computing</li>
+        <li>Cybersecurity</li>
+        <li>Databases</li>
+        <li>Computer Graphics</li>
+        <li>Algorithmic Economics</li>
+        <li>Wireless IoT</li>
+        <li>Discrete Mathematics</li>
+        <li>Linear Algebra</li>
+        <li>Probability &amp; Statistics</li>
+        <li>Multivariable Calculus</li>
+        <li>Differential Equations</li>
+        <li>Partial Differential Equations</li>
+        <li>Data Visualization</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="edu-item fade-in">
+    <h3>Thomas Jefferson High School for Science & Technology</h3>
+    <p class="degree">Advanced Studies Diploma</p>
+    <p class="details">GPA: 4.5 · SAT: 1600/1600</p>
+    <button class="courses-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.nextElementSibling.classList.contains('open') ? '▾ Hide Courses' : '▸ Show Courses';">▸ Show Courses</button>
+    <div class="courses-list">
+      <ul>
+        <li>Artificial Intelligence</li>
+        <li>Computer Systems</li>
+        <li>Multivariable Calculus</li>
+        <li>Linear Algebra</li>
+        <li>AP Computer Science (5)</li>
+        <li>AP Physics C (5)</li>
+        <li>AP BC Calculus (5)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="edu-item fade-in">
+    <h3>Certifications</h3>
+    <p class="details"><a href="https://www.coursera.org/account/accomplishments/certificate/CGUFN47DJJZL">Stanford Machine Learning Certificate</a> · Coursera</p>
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact">
+  <h2 class="section-title" style="justify-content:center;">Get In Touch</h2>
+  <p>I'm always open to interesting conversations and opportunities. Feel free to reach out.</p>
+  <a href="mailto:z.alanzheng@gmail.com" class="cta">Say Hello</a>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-links">
+    <a href="https://github.com/arxk9" target="_blank" aria-label="GitHub">
+      <svg viewBox="0 0 16 16" width="20" height="20"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" fill="currentColor"/></svg>
+    </a>
+    <a href="https://www.linkedin.com/in/arxk9" target="_blank" aria-label="LinkedIn">
+      <svg viewBox="0 0 16 16" width="20" height="20"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 01.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" fill="currentColor"/></svg>
+    </a>
+  </div>
+  <p>Built by Alan Zheng</p>
+</footer>
+
+<!-- Scroll to top -->
+<button class="scroll-top" aria-label="Scroll to top">↑</button>
+
+<script>
+  // Fade-in on scroll
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+  // Animate language bars on scroll
+  const barObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.lang-bar').forEach(bar => { bar.style.width = bar.dataset.width + '%'; });
+        barObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.lang-list').forEach(el => barObs.observe(el));
+
+  // Staggered pop-in for skill chips
+  const pillObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.tool-chip').forEach((s, i) => {
+          setTimeout(() => s.classList.add('pop'), i * 60);
+        });
+        pillObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.skills-group').forEach(el => pillObs.observe(el));
+
+  // Scroll-to-top button
+  const btn = document.querySelector('.scroll-top');
+  window.addEventListener('scroll', () => { btn.classList.toggle('show', window.scrollY > 500); });
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  // Mobile hamburger
+  const hamburger = document.querySelector('.hamburger');
+  const navLinks = document.querySelector('.nav-links');
+  hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  // Neural network parallax background
+  (() => {
+    const c = document.getElementById('geo-bg'), ctx = c.getContext('2d');
+    let w, h, nodes = [];
+    const N = 90, MAX_D = 160;
+
+    function resize() {
+      w = c.width = window.innerWidth;
+      h = c.height = window.innerHeight;
+    }
+
+    function init() {
+      resize();
+      nodes = [];
+      for (let i = 0; i < N; i++) {
+        nodes.push({
+          baseX: Math.random() * w,
+          baseY: Math.random() * h,
+          vx: (Math.random() - .5) * .25,
+          vy: (Math.random() - .5) * .25,
+          r: Math.random() * 1.8 + .5,
+          depth: Math.random() * .6 + .2,
+          pulse: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    let scrollY = 0;
+    window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
+
+    function draw(t) {
+      ctx.clearRect(0, 0, w, h);
+
+      for (let i = 0; i < N; i++) {
+        const a = nodes[i];
+        a.baseX += a.vx;
+        a.baseY += a.vy;
+        if (a.baseX < -20) a.baseX = w + 20;
+        if (a.baseX > w + 20) a.baseX = -20;
+        if (a.baseY < -20) a.baseY = h + 20;
+        if (a.baseY > h + 20) a.baseY = -20;
+        a.pulse += .01;
+      }
+
+      for (let i = 0; i < N; i++) {
+        const a = nodes[i];
+        const ax = a.baseX, ay = a.baseY + scrollY * a.depth * -.15;
+        const aScreen = ((ay % h) + h) % h;
+
+        for (let j = i + 1; j < N; j++) {
+          const b = nodes[j];
+          const bx = b.baseX, by = b.baseY + scrollY * b.depth * -.15;
+          const bScreen = ((by % h) + h) % h;
+          const dx = ax - bx, dy = aScreen - bScreen;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MAX_D) {
+            const alpha = (1 - dist / MAX_D) * .35;
+            const grad = ctx.createLinearGradient(ax, aScreen, bx, bScreen);
+            grad.addColorStop(0, `rgba(88,166,255,${alpha})`);
+            grad.addColorStop(1, `rgba(63,185,80,${alpha * .6})`);
+            ctx.beginPath();
+            ctx.moveTo(ax, aScreen);
+            ctx.lineTo(bx, bScreen);
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = .6;
+            ctx.stroke();
+          }
+        }
+
+        const glow = Math.sin(a.pulse) * .15 + .55;
+        ctx.beginPath();
+        ctx.arc(ax, aScreen, a.r * 1.5 + Math.sin(a.pulse) * .5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(88,166,255,${glow * .3})`;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(ax, aScreen, a.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(88,166,255,${glow})`;
+        ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+
+    init();
+    draw(0);
+    window.addEventListener('resize', () => { resize(); init(); });
+  })();
+</script>
+
+</body>
+</html>
