@@ -570,6 +570,10 @@
             <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 01.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>
             LinkedIn
           </a>
+          <a href="Alan_Zheng_Resume.pdf" target="_blank" rel="noopener" download>
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M9 1H4a1 1 0 00-1 1v12a1 1 0 001 1h8a1 1 0 001-1V5L9 1zm0 1.5L11.5 5H9V2.5zM4.5 8.5h7V10h-7V8.5zm0 2.5h7v1.5h-7V11zm0-5h3V7h-3V6z"/></svg>
+            Résumé
+          </a>
         </div>
       </div>
       <div class="term-main" id="term-main" aria-live="polite"></div>
@@ -590,7 +594,7 @@
     <ul>
       <li>Built core authentication APIs for a next-generation distributed auth system in Rust, achieving full feature parity with legacy Java services.</li>
       <li>Led migration of authentication traffic across 11 global regions to a sharded data architecture with zero customer impact.</li>
-      <li>Cut p50 latency 30% under peak load via jemalloc, TLS session resumption, and Tokio worker-thread tuning, guided by per-stage profiling (CodeGuru, aperf). Established performance contracts and isolated load-test environments to gate releases on regressions.</li>
+      <li>Cut auth-API latency ~45% under peak load through systematic profiling and allocation, I/O, and framework-overhead optimization. Stood up isolated load-test environments that gate releases on performance regressions.</li>
       <li>Implemented end-to-end client authentication between frontend and backend services with SigV4 signing, caching, parallel execution, and shadow-mode rollout.</li>
       <li>Unblocked a production launch stalled for a month by standing up mutual-TLS (mTLS) service-to-service communication in one week, migrating the transport layer to a Netty-based stack to integrate a new PKI/certificate library with automated cert rotation.</li>
       <li>Built a security scanner daemon that proactively detects data consistency vulnerabilities, surfacing 50+ issues and now a mandatory validation gate for feature releases.</li>
@@ -677,7 +681,7 @@
         <h3>Rust Ops CLI Tool</h3>
         <span class="arrow">↗</span>
       </div>
-      <p>Built a Rust CLI for pipeline health monitoring, aperf performance benchmarking with S3 storage and run comparison, host scanning, and deployment diagnostics. Used daily by the team.</p>
+      <p>Built a Rust CLI for pipeline health monitoring, performance benchmarking with S3 storage and run comparison, host scanning, and deployment diagnostics. Used daily by the team.</p>
       <div class="tags">
         <span>Rust</span><span>AWS S3</span><span>CLI</span><span>Ops Tooling</span>
       </div>
@@ -810,7 +814,7 @@
   <div class="skills-group fade-in">
     <h3><span class="cat-icon">//</span> Performance</h3>
     <div class="tool-cloud">
-      <span class="tool-chip cat-perf">CodeGuru</span><span class="tool-chip cat-perf">Aperf</span><span class="tool-chip cat-perf">Jemalloc</span><span class="tool-chip cat-perf">Tokio Console</span><span class="tool-chip cat-perf">Perf</span><span class="tool-chip cat-perf">Flamegraphs</span><span class="tool-chip cat-perf">Heap Profiling</span><span class="tool-chip cat-perf">Latency Analysis</span>
+      <span class="tool-chip cat-perf">CodeGuru</span><span class="tool-chip cat-perf">Perf</span><span class="tool-chip cat-perf">Tokio Console</span><span class="tool-chip cat-perf">Flamegraphs</span><span class="tool-chip cat-perf">Heap Profiling</span><span class="tool-chip cat-perf">Latency Analysis</span>
     </div>
   </div>
 
@@ -838,7 +842,7 @@
   <div class="edu-item fade-in">
     <h3>University of Washington</h3>
     <p class="degree">MS in Computer Science & Engineering</p>
-    <p class="details">Expected May 2026 · GPA: 4.0</p>
+    <p class="details">Expected Jun 2027 · GPA: 4.0</p>
     <button class="courses-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.nextElementSibling.classList.contains('open') ? '▾ Hide Courses' : '▸ Show Courses';">▸ Show Courses</button>
     <div class="courses-list">
       <ul>
