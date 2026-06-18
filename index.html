@@ -579,7 +579,7 @@
 
 <!-- Experience -->
 <section id="experience">
-  <h2 class="section-title" data-cmd="~/experience $">Experience</h2>
+  <h2 class="section-title" data-cmd="~ $ cd">experience</h2>
 
   <div class="exp-item fade-in">
     <div class="exp-header">
@@ -645,7 +645,7 @@
 
 <!-- Projects -->
 <section id="projects">
-  <h2 class="section-title" data-cmd="~/projects $">Projects</h2>
+  <h2 class="section-title" data-cmd="~ $ cd">projects</h2>
   <div class="projects-grid">
 
     <a href="https://tinyurl.com/hju89ekh" target="_blank" rel="noopener" class="project-card fade-in" style="text-decoration:none;color:inherit;">
@@ -660,12 +660,23 @@
       </div>
     </a>
 
+    <a href="https://github.com/dominicholcomb/interviewcoach" target="_blank" rel="noopener" class="project-card fade-in" style="text-decoration:none;color:inherit;">
+      <div class="card-top">
+        <h3>InterviewCoach</h3>
+        <span class="arrow">↗</span>
+      </div>
+      <p class="featured">★ Featured</p>
+      <p>Agentic mock-interview app: a LangGraph orchestrator runs the interview while a parallel evaluator swarm scores each answer per dimension. Built on AWS Bedrock (Claude Sonnet + Haiku) with a swappable vLLM backend and a Streamlit UI.</p>
+      <div class="tags">
+        <span>Python</span><span>LangGraph</span><span>AWS Bedrock</span><span>Multi-Agent</span>
+      </div>
+    </a>
+
     <div class="project-card fade-in">
       <div class="card-top">
         <h3>Rust Ops CLI Tool</h3>
         <span class="arrow">↗</span>
       </div>
-      <p class="featured">★ Featured</p>
       <p>Built a Rust CLI for pipeline health monitoring, aperf performance benchmarking with S3 storage and run comparison, host scanning, and deployment diagnostics. Used daily by the team.</p>
       <div class="tags">
         <span>Rust</span><span>AWS S3</span><span>CLI</span><span>Ops Tooling</span>
@@ -754,7 +765,7 @@
 
 <!-- Skills -->
 <section id="skills">
-  <h2 class="section-title" data-cmd="~/skills $">Skills</h2>
+  <h2 class="section-title" data-cmd="~ $ cd">skills</h2>
 
   <div class="skills-group fade-in">
     <h3><span class="cat-icon">//</span> Languages</h3>
@@ -822,7 +833,7 @@
 
 <!-- Education -->
 <section id="education">
-  <h2 class="section-title" data-cmd="~/education $">Education</h2>
+  <h2 class="section-title" data-cmd="~ $ cd">education</h2>
 
   <div class="edu-item fade-in">
     <h3>University of Washington</h3>
@@ -896,7 +907,7 @@
 
 <!-- Contact -->
 <section id="contact">
-  <h2 class="section-title" data-cmd="~/contact $" style="justify-content:center;">Get In Touch</h2>
+  <h2 class="section-title" data-cmd="~ $ cat" style="justify-content:center;">contact.txt</h2>
   <p>I'm always open to interesting conversations and opportunities. Feel free to reach out.</p>
   <a href="mailto:z.alanzheng+hello@gmail.com?subject=Hello%20from%20your%20portfolio" class="cta">Say Hello</a>
 </section>
@@ -1187,7 +1198,7 @@
     // fact-checked against overclaiming (nothing here implies a skill Alan lacks).
     const ITEMS = [
       { id: 'experience', label: 'Experience', sub: '~/experience', keys: ['software engineer','sde ii','backend engineer','aws','amazon','authentication','auth','iam','identity and access management','iam policy evaluation','distributed systems','systems programming','data plane','api development','sharding','sharded data architecture','multi-region','migration','data migration','low latency','tail latency','p50 latency','latency optimization','performance optimization','performance tuning','profiling','observability','metrics','concurrency','async runtime','load testing','mtls','mutual tls','tls','pki','sigv4','netty','certificate rotation','certificate management','x.509 certificates','security scanner','vulnerability detection','appsec','apt detection','advanced persistent threat','bedrock','genai','rate limiter','unit testing','test coverage','parallel execution','quantified impact','ownership','leadership','mentorship','teaching','teaching assistant','research assistant','word sense disambiguation','intern','internship','seattle'] },
-      { id: 'projects',   label: 'Projects',   sub: '~/projects',   keys: ['reinforcement learning','rl','multi-agent rl','multi-agent reinforcement learning','marl','multi-agent','deep q-learning','drone swarm','gan','generative adversarial network','recommender system','matrix factorization','nlp','natural language processing','chatbot','slack bot','cli tool','cli tooling','ops tooling','benchmarking','flask','ros','research paper'] },
+      { id: 'projects',   label: 'Projects',   sub: '~/projects',   keys: ['reinforcement learning','rl','multi-agent rl','multi-agent reinforcement learning','marl','multi-agent','deep q-learning','drone swarm','gan','generative adversarial network','recommender system','matrix factorization','nlp','natural language processing','chatbot','slack bot','cli tool','cli tooling','ops tooling','benchmarking','flask','ros','research paper','agentic','ai agents','agent orchestration','langgraph','llm','llm orchestration','bedrock','aws bedrock','claude','vllm','streamlit','evaluator swarm','llm evaluation'] },
       { id: 'skills',     label: 'Skills',     sub: '~/skills',     keys: ['rust','java','python','javascript','c++','sql','bash','machine learning','ml','pytorch','tensorflow','transformers','opencv','spacy','scikit-learn','numpy','pandas','tokio','docker','react','django','github actions','ci/cd','aws','lambda','s3','dynamodb','sagemaker','codeguru','aperf','jemalloc','flamegraphs','heap profiling','latency analysis','performance engineering','cryptography','applied crypto','tls','ecdsa','hmac','x.509','x509 certificates','cipher suites'] },
       { id: 'education',  label: 'Education',   sub: '~/education',  keys: ['ms computer science','masters degree','bs computer science','computer science degree','university of washington','university of virginia','uva','uw','new grad','graduating 2026','gpa','gpa 4.0','coursework','deep learning','llm','llm inference','llm inference systems','artificial intelligence','computer vision','machine learning','algorithms','operating systems','databases','cybersecurity','distributed systems coursework','applied mathematics','data science'] },
       { id: 'contact',    label: 'Contact',    sub: '~/contact',    keys: ['contact','email','hire','reach out','get in touch','resume','github','linkedin','message','hello'] },
