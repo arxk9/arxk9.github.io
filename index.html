@@ -12,7 +12,12 @@
   <meta property="og:title" content="Alan Zheng, Software Engineer">
   <meta property="og:description" content="Software engineer at AWS building secure, high-performance distributed systems in Rust and Java.">
   <meta property="og:url" content="https://arxk9.github.io/">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="https://arxk9.github.io/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Terminal window reading: Alan Zheng, software engineer building secure, high-performance distributed systems at AWS in Rust and Java.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://arxk9.github.io/og-image.png">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%230a0c10'/%3E%3Ctext%20x='16'%20y='22'%20font-family='monospace'%20font-size='15'%20font-weight='bold'%20fill='%234cd787'%20text-anchor='middle'%3EAZ%3C/text%3E%3C/svg%3E">
   <title>Alan Zheng, Software Engineer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -97,6 +102,17 @@
     nav .nav-links a.active::before,
     nav .nav-links a.active::after { color: var(--accent); }
     .hamburger { display: none; background: none; border: none; color: var(--accent); font-size: 1.5rem; cursor: pointer; font-family: var(--mono); }
+    /* Desktop: the hero's own ls menu is the nav on the first screen, so the
+       top-bar section links stay hidden until the hero scrolls mostly away. */
+    @media (min-width: 641px) {
+      nav .nav-links {
+        opacity: 0; visibility: hidden; transform: translateY(-4px); pointer-events: none;
+        transition: opacity .3s ease, transform .3s ease, visibility .3s;
+      }
+      nav.past-hero .nav-links {
+        opacity: 1; visibility: visible; transform: none; pointer-events: auto;
+      }
+    }
 
     /* ── Sections ── */
     section { max-width: var(--max-w); margin: 0 auto; padding: 5rem 1.5rem 2rem; scroll-margin-top: 3.5rem; }
@@ -129,6 +145,65 @@
     .term-bar .dot:nth-child(1) { background: #ff5f56; }
     .term-bar .dot:nth-child(2) { background: #ffbd2e; }
     .term-bar .dot:nth-child(3) { background: #27c93f; }
+    /* The red and green dots are real interactive buttons (close + maximize) */
+    .dot-btn { padding: 0; border: none; cursor: pointer; position: relative; }
+    .dot-btn::before {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 8px; line-height: 1; color: rgba(0,0,0,.6); font-weight: 700;
+      opacity: 0; transition: opacity .15s;
+    }
+    #dot-close::before { content: '✕'; }
+    #dot-max::before { content: '+'; font-size: 11px; }
+    .term-bar:hover .dot-btn::before, .dot-btn:focus-visible::before { opacity: 1; }
+    /* Normal (in-flow) state: single column, the middle pane is dormant. */
+    .term-main { display: none; }
+
+    /* Maximized terminal: expands to fill the viewport like a real window */
+    .term.maximized {
+      position: fixed; inset: 1.25rem; z-index: 150; max-width: none; margin: 0;
+      display: flex; flex-direction: column;
+    }
+    /* The maximize/restore FLIP runs via the Web Animations API in JS. */
+    /* Each section swapped into the middle pane animates in. */
+    @keyframes paneIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .term-main > section { animation: paneIn .32s cubic-bezier(.2,.7,.2,1); }
+    /* Two-pane layout when maximized: identity/dirs on the left, section middle. */
+    .term.maximized .term-body {
+      flex: 1; min-height: 0; display: grid; grid-template-columns: 300px 1fr;
+      gap: 0; padding: 0; overflow: hidden;
+    }
+    .term.maximized .term-side {
+      border-right: 1px solid var(--border); padding: 1.6rem 1.5rem; overflow-y: auto; min-height: 0;
+    }
+    .term.maximized .term-main {
+      display: block; padding: 1.5rem 2rem 2.5rem; overflow-y: auto; min-height: 0;
+    }
+    /* The cloned section drops its own outer spacing; it lives in the pane now. */
+    .term-main > section { max-width: none; margin: 0; padding: 0; }
+    .term-main .section-title { margin-bottom: 1.5rem; justify-content: flex-start !important; }
+    /* Contact loses its id-based centering when cloned, so left-align it to
+       match the other panes (the CTA keeps its own styling via .cta). */
+    .term-main > section > p { max-width: 62ch; color: var(--text-body); margin: 0 0 1.3rem; }
+    /* Keep the name and its cursor on one line in the narrower sidebar. */
+    .term.maximized .term-side h1 { font-size: 2.05rem; white-space: nowrap; }
+    #dot-max.is-max::before { content: '−'; font-size: 12px; }
+    body.term-maxed { overflow: hidden; }
+    body.term-maxed::after { display: none; } /* drop scanlines behind the big window */
+    body.term-maxed nav { display: none; }   /* fullscreen takeover hides the nav (also avoids it overlapping the title bar) */
+    /* "esc to restore" hint, shown only while maximized */
+    .term-hint { margin-left: auto; font-family: var(--mono); font-size: .72rem; color: var(--text-dim); display: none; }
+    .term.maximized .term-hint { display: inline; }
+    .term-hint kbd { font-family: var(--mono); font-size: .68rem; color: var(--text); background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: .03rem .3rem; }
+    /* In the maximized view the ls listing is the navigation, so make it pop. */
+    .term.maximized .ls-list a:hover, .term.maximized .ls-list a:focus-visible { background: var(--bg3); color: var(--accent); }
+    .term.maximized .ls-list a.active { background: var(--bg3); color: var(--accent); }
+    .term.maximized .ls-list a.active .ls-perm { color: var(--accent); }
+    /* On narrow screens the two-pane stacks vertically. */
+    @media (max-width: 760px) {
+      .term.maximized .term-body { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+      .term.maximized .term-side { border-right: none; border-bottom: 1px solid var(--border); }
+    }
+    @media (max-width: 640px) { .term-hint { display: none !important; } }
     .term-bar .term-title { margin-left: .5rem; font-family: var(--mono); font-size: .75rem; color: var(--text-dim); }
     .term-body { padding: 1.5rem 1.4rem 1.75rem; font-family: var(--mono); }
     .term-line { font-size: .9rem; color: var(--text-dim); margin-bottom: .35rem; }
@@ -165,6 +240,7 @@
       transition: color .15s;
     }
     .ls-hint:hover { color: var(--accent); }
+    .ls-hint-mob { display: none; }
     .ls-hint kbd {
       font-family: var(--mono); font-size: .72rem; color: var(--text);
       background: var(--bg3); border: 1px solid var(--border); border-radius: 4px;
@@ -376,6 +452,25 @@
     .cmdk-list li.sel .ci-icon { color: var(--accent); }
     .cmdk-empty { padding: 1rem; text-align: center; color: var(--text-dim); font-family: var(--mono); font-size: .85rem; }
 
+    /* ── "Close terminal" easter-egg dialog ── */
+    .quit { position: fixed; inset: 0; z-index: 210; display: flex; align-items: center; justify-content: center; }
+    .quit[hidden] { display: none; }
+    .quit-backdrop { position: absolute; inset: 0; background: rgba(5,7,10,.7); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+    .quit-box {
+      position: relative; width: min(420px, 92vw); background: var(--bg2);
+      border: 1px solid var(--border); border-radius: 10px; padding: 1.4rem 1.5rem 1.3rem;
+      box-shadow: 0 30px 70px -20px rgba(0,0,0,.8); animation: cmdkin .16s ease;
+    }
+    .quit-title { font-family: var(--mono); font-size: .8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .7rem; }
+    .quit-title .quit-x { color: var(--accent2); }
+    .quit-msg { font-family: var(--mono); font-size: 1rem; color: var(--text); margin-bottom: 1.3rem; line-height: 1.5; }
+    .quit-actions { display: flex; gap: .7rem; justify-content: flex-end; flex-wrap: wrap; }
+    .quit-actions button { font-family: var(--mono); font-size: .85rem; padding: .5rem 1.1rem; border-radius: 6px; cursor: pointer; transition: all .18s; }
+    .quit-stay { background: var(--accent); color: var(--bg); border: 1px solid var(--accent); font-weight: 600; }
+    .quit-stay:hover { box-shadow: 0 6px 20px -6px rgba(76,215,135,.5); }
+    .quit-go { background: none; color: var(--text-dim); border: 1px solid var(--border); }
+    .quit-go:hover { color: var(--text); border-color: var(--text-dim); }
+
     /* ── Reduced motion ── */
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -398,6 +493,8 @@
       }
       .hamburger { display: block; }
       .nav-clock { display: none; }
+      .ls-hint-desk { display: none; }
+      .ls-hint-mob { display: inline; }
       .exp-header { flex-direction: column; }
       .projects-grid { grid-template-columns: 1fr; }
     }
@@ -441,36 +538,41 @@
 <section id="hero">
   <div class="term fade-in">
     <div class="term-bar">
-      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <button type="button" class="dot dot-btn" id="dot-close" aria-label="Close terminal"></button><span class="dot"></span><button type="button" class="dot dot-btn" id="dot-max" aria-label="Maximize terminal"></button>
       <span class="term-title">alan@aws: ~</span>
+      <span class="term-hint" aria-hidden="true">select a directory or press <kbd>esc</kbd> to restore</span>
     </div>
     <div class="term-body">
-      <p class="term-line"><span class="prompt">alan@aws</span>:<span style="color:var(--accent2)">~</span>$ <span id="type-cmd" data-text="whoami --verbose"></span></p>
-      <h1>Alan <span class="accent">Zheng</span><span class="cursor"></span></h1>
-      <p class="tagline">Software engineer building <span class="hl">secure, high-performance distributed systems</span> at AWS, primarily in Rust and Java on IAM authentication. Interested in systems programming, security, ML, and mathematics.</p>
-      <div class="hero-ls">
-        <p class="term-line ls-cmd"><span class="prompt">alan@aws</span>:<span style="color:var(--accent2)">~</span>$ ls</p>
-        <ul class="ls-list">
-          <li><a href="#experience"><span class="ls-perm">drwxr-xr-x</span> experience/</a></li>
-          <li><a href="#projects"><span class="ls-perm">drwxr-xr-x</span> projects/</a></li>
-          <li><a href="#skills"><span class="ls-perm">drwxr-xr-x</span> skills/</a></li>
-          <li><a href="#education"><span class="ls-perm">drwxr-xr-x</span> education/</a></li>
-          <li><a href="#contact"><span class="ls-perm">-rw-r--r--</span> contact.txt</a></li>
-        </ul>
-        <button type="button" class="ls-hint" data-open-cmdk aria-label="Open command palette to jump to a section">
-          press <kbd>⌘</kbd><kbd>K</kbd> to jump anywhere
-        </button>
+      <div class="term-side">
+        <p class="term-line"><span class="prompt">alan@aws</span>:<span style="color:var(--accent2)">~</span>$ <span id="type-cmd" data-text="whoami --verbose"></span></p>
+        <h1>Alan <span class="accent">Zheng</span><span class="cursor"></span></h1>
+        <p class="tagline">Software engineer building <span class="hl">secure, high-performance distributed systems</span> at AWS, primarily in Rust and Java on IAM authentication. Interested in systems programming, security, ML, and mathematics.</p>
+        <div class="hero-ls">
+          <p class="term-line ls-cmd"><span class="prompt">alan@aws</span>:<span style="color:var(--accent2)">~</span>$ ls</p>
+          <ul class="ls-list">
+            <li><a href="#experience"><span class="ls-perm">drwxr-xr-x</span> experience/</a></li>
+            <li><a href="#projects"><span class="ls-perm">drwxr-xr-x</span> projects/</a></li>
+            <li><a href="#skills"><span class="ls-perm">drwxr-xr-x</span> skills/</a></li>
+            <li><a href="#education"><span class="ls-perm">drwxr-xr-x</span> education/</a></li>
+            <li><a href="#contact"><span class="ls-perm">-rw-r--r--</span> contact.txt</a></li>
+          </ul>
+          <button type="button" class="ls-hint" data-open-cmdk aria-label="Open command palette to jump to a section">
+            <span class="ls-hint-desk">press <kbd>⌘</kbd><kbd>K</kbd> to jump anywhere</span>
+            <span class="ls-hint-mob">tap to jump anywhere</span>
+          </button>
+        </div>
+        <div class="social-links">
+          <a href="https://github.com/arxk9" target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            GitHub
+          </a>
+          <a href="https://www.linkedin.com/in/arxk9" target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 01.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>
+            LinkedIn
+          </a>
+        </div>
       </div>
-      <div class="social-links">
-        <a href="https://github.com/arxk9" target="_blank" rel="noopener">
-          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-          GitHub
-        </a>
-        <a href="https://www.linkedin.com/in/arxk9" target="_blank" rel="noopener">
-          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 01.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>
-          LinkedIn
-        </a>
-      </div>
+      <div class="term-main" id="term-main" aria-live="polite"></div>
     </div>
   </div>
 </section>
@@ -488,13 +590,12 @@
     <ul>
       <li>Built core authentication APIs for a next-generation distributed auth system in Rust, achieving full feature parity with legacy Java services.</li>
       <li>Led migration of authentication traffic across 11 global regions to a sharded data architecture with zero customer impact.</li>
-      <li>Cut p50 latency 30% under peak load through jemalloc, connection warming pools, TLS session resumption, Tokio worker-thread tuning, and allocation/logging reductions, backed by per-stage profiling, dashboards, and a defined metrics taxonomy (CodeGuru, aperf). Established performance contracts and isolated load-test environments with automated baseline comparison to gate releases.</li>
+      <li>Cut p50 latency 30% under peak load via jemalloc, TLS session resumption, and Tokio worker-thread tuning, guided by per-stage profiling (CodeGuru, aperf). Established performance contracts and isolated load-test environments to gate releases on regressions.</li>
       <li>Implemented end-to-end client authentication between frontend and backend services with SigV4 signing, caching, parallel execution, and shadow-mode rollout.</li>
       <li>Unblocked a production launch stalled for a month by standing up mutual-TLS (mTLS) service-to-service communication in one week, migrating the transport layer to a Netty-based stack to integrate a new PKI/certificate library with automated cert rotation.</li>
       <li>Built a security scanner daemon that proactively detects data consistency vulnerabilities, surfacing 50+ issues and now a mandatory validation gate for feature releases.</li>
       <li>Improved code coverage 15% by designing a unit testing framework with custom macros and factory traits for the Rust codebase, accelerating feature development.</li>
       <li>Saved 40+ operational hours annually with an AWS Bedrock-powered tool translating natural language into complex database queries.</li>
-      <li>Created a Rust CLI ops tool for pipeline health monitoring, aperf performance benchmarking with S3 storage and run comparison, and host-level diagnostics.</li>
     </ul>
   </div>
 
@@ -827,6 +928,19 @@
   </div>
 </div>
 
+<!-- "Close terminal" easter egg dialog -->
+<div class="quit" id="quit" hidden>
+  <div class="quit-backdrop"></div>
+  <div class="quit-box" role="alertdialog" aria-modal="true" aria-labelledby="quit-msg">
+    <p class="quit-title"><span class="quit-x">⚠</span> exit</p>
+    <p class="quit-msg" id="quit-msg">Close the terminal?</p>
+    <div class="quit-actions">
+      <button type="button" class="quit-stay" id="quit-stay">Stay</button>
+      <button type="button" class="quit-go" id="quit-go">Close anyway</button>
+    </div>
+  </div>
+</div>
+
 <!-- Scroll to top -->
 <button class="scroll-top" aria-label="Scroll to top">↑</button>
 
@@ -919,6 +1033,147 @@
     setInterval(tick, 1000);
   })();
 
+  // Red-dot "close terminal" easter egg: a roach-motel quit dialog where
+  // "Stay" always wins and "Close anyway" just escalates forever.
+  (() => {
+    const dot = document.getElementById('dot-close');
+    const quit = document.getElementById('quit');
+    const msg = document.getElementById('quit-msg');
+    const stay = document.getElementById('quit-stay');
+    const go = document.getElementById('quit-go');
+    if (!dot || !quit || !msg || !stay || !go) return;
+
+    const LINES = [
+      'Close the terminal?',
+      'Are you sure?',
+      'Are you really sure?',
+      'There is nothing for you out there.',
+      'You would be leaving Alan all alone in here.',
+      'Think of the unread bullet points.',
+      'The recruiters will never find you now.',
+      'Last chance to reconsider. (There is no last chance.)',
+      'This button does not work. It never did.',
+      'Bold of you to keep trying.',
+      'We can do this all day.',
+      '404: exit not found.',
+      'Have you considered hiring him instead?',
+    ];
+    let i = 0, lastFocus = null;
+
+    function open() {
+      lastFocus = document.activeElement;
+      i = 0; msg.textContent = LINES[0];
+      quit.hidden = false; document.body.style.overflow = 'hidden';
+      stay.focus();
+    }
+    function close() {
+      quit.hidden = true; document.body.style.overflow = '';
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    function escalate() {
+      // Advance through the lines, then loop back (skipping the opener) so it
+      // never gets stuck on a single repeated message: endless by design.
+      i = i + 1 >= LINES.length ? 1 : i + 1;
+      msg.textContent = LINES[i];
+      stay.focus();
+    }
+
+    dot.addEventListener('click', open);
+    stay.addEventListener('click', close);
+    go.addEventListener('click', escalate);
+    quit.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); close(); } });
+  })();
+
+  // Green-dot "maximize": expand the hero terminal into a two-pane "app". The
+  // identity + directory list stay on the left, the chosen section renders in
+  // the middle. Navigating (ls link or ⌘K) updates the pane WITHOUT collapsing.
+  (() => {
+    const btn = document.getElementById('dot-max');
+    const term = document.querySelector('.term');
+    const main = document.getElementById('term-main');
+    if (!btn || !term || !main) return;
+    let current = null;
+
+    function setState(max) {
+      term.classList.toggle('maximized', max);
+      btn.classList.toggle('is-max', max);
+      document.body.classList.toggle('term-maxed', max);
+      btn.setAttribute('aria-label', max ? 'Restore terminal' : 'Maximize terminal');
+    }
+    // Clone a section into the middle pane and mark its ls link active.
+    function show(id) {
+      const src = document.getElementById(id);
+      if (!src) return;
+      const clone = src.cloneNode(true);
+      clone.removeAttribute('id');
+      // Cloned content must not inherit the not-yet-revealed animation states.
+      clone.querySelectorAll('.fade-in').forEach(e => e.classList.add('visible'));
+      clone.querySelectorAll('.tool-chip').forEach(e => e.classList.add('pop'));
+      main.innerHTML = '';
+      main.appendChild(clone);
+      main.scrollTop = 0;
+      term.querySelectorAll('.ls-list a').forEach(a =>
+        a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      current = id;
+    }
+    function toggle() {
+      const max = !term.classList.contains('maximized');
+      if (max && !current) show('experience');   // default pane on first open
+      if (reduceMotion || !term.animate) { setState(max); return; }
+      const first = term.getBoundingClientRect();  // FLIP: First
+      setState(max);                                // Last (apply end layout)
+      const last = term.getBoundingClientRect();
+      const dx = first.left - last.left, dy = first.top - last.top;
+      const sx = first.width / last.width, sy = first.height / last.height;
+      // Animate from the old box (invert) to the new one via Web Animations API.
+      term.style.transformOrigin = 'top left';
+      term.animate(
+        [{ transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` }, { transform: 'none' }],
+        { duration: 550, easing: 'cubic-bezier(.16,.84,.34,1)' }
+      );
+    }
+    function restore() { if (term.classList.contains('maximized')) toggle(); }
+    const isMax = () => term.classList.contains('maximized');
+
+    btn.addEventListener('click', toggle);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') restore(); });
+    // While maximized, ls links swap the pane in place instead of scrolling away.
+    term.querySelectorAll('.ls-list a').forEach(a => a.addEventListener('click', (e) => {
+      if (!isMax()) return;
+      e.preventDefault();
+      show(a.getAttribute('href').slice(1));
+    }));
+
+    // Expose so the command palette can render into the pane while fullscreen.
+    window.__term = { isMax, show };
+  })();
+
+  // A note for the curious who open DevTools (mostly engineers, and recruiters
+  // who screen-share with one). Styled console banner with a hiring wink.
+  (() => {
+    const A = 'color:#4cd787;font-family:monospace;font-weight:700';
+    const D = 'color:#7d8694;font-family:monospace';
+    const L = 'color:#f5b94d;font-family:monospace';
+    console.log('%c> whoami', A);
+    console.log('%cAlan Zheng, software engineer @ AWS (IAM Authentication).\nRust + Java, distributed systems, security.', D);
+    console.log('%cPoking around the console? You\'re my kind of people. 🦀', A);
+    console.log('%cI\'m open to interesting conversations: %cz.alanzheng+hello@gmail.com', D, L);
+    console.log('%cgithub.com/arxk9  ·  linkedin.com/in/arxk9', D);
+  })();
+
+  // Reveal the top-nav section links only after the hero scrolls mostly away
+  // (on the first screen the hero's own ls menu serves as navigation).
+  (() => {
+    const navEl = document.querySelector('nav');
+    const hero = document.getElementById('hero');
+    if (!navEl || !hero) return;
+    if (!supportsIO) { navEl.classList.add('past-hero'); return; }
+    const heroObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => navEl.classList.toggle('past-hero', !e.isIntersecting));
+    }, { rootMargin: '-45% 0px 0px 0px' });
+    heroObs.observe(hero);
+  })();
+
   // Command palette (⌘K / Ctrl+K): jump to any section
   (() => {
     const cmdk = document.getElementById('cmdk');
@@ -931,8 +1186,8 @@
     // grounded in real portfolio content (mined across recruiter personas and
     // fact-checked against overclaiming (nothing here implies a skill Alan lacks).
     const ITEMS = [
-      { id: 'experience', label: 'Experience', sub: '~/experience', keys: ['software engineer','sde ii','backend engineer','aws','amazon','authentication','auth','iam','identity and access management','iam policy evaluation','distributed systems','systems programming','data plane','api development','sharding','sharded data architecture','multi-region','migration','data migration','low latency','tail latency','p50 latency','latency optimization','performance optimization','performance tuning','profiling','benchmarking','observability','metrics','concurrency','async runtime','load testing','mtls','mutual tls','tls','pki','sigv4','netty','certificate rotation','certificate management','x.509 certificates','security scanner','vulnerability detection','appsec','apt detection','advanced persistent threat','bedrock','genai','ops tooling','rate limiter','unit testing','test coverage','parallel execution','quantified impact','ownership','leadership','mentorship','teaching','teaching assistant','research assistant','word sense disambiguation','intern','internship','seattle'] },
-      { id: 'projects',   label: 'Projects',   sub: '~/projects',   keys: ['reinforcement learning','rl','multi-agent rl','multi-agent reinforcement learning','marl','multi-agent','deep q-learning','drone swarm','gan','generative adversarial network','recommender system','matrix factorization','nlp','natural language processing','chatbot','slack bot','cli tool','cli tooling','flask','ros','research paper'] },
+      { id: 'experience', label: 'Experience', sub: '~/experience', keys: ['software engineer','sde ii','backend engineer','aws','amazon','authentication','auth','iam','identity and access management','iam policy evaluation','distributed systems','systems programming','data plane','api development','sharding','sharded data architecture','multi-region','migration','data migration','low latency','tail latency','p50 latency','latency optimization','performance optimization','performance tuning','profiling','observability','metrics','concurrency','async runtime','load testing','mtls','mutual tls','tls','pki','sigv4','netty','certificate rotation','certificate management','x.509 certificates','security scanner','vulnerability detection','appsec','apt detection','advanced persistent threat','bedrock','genai','rate limiter','unit testing','test coverage','parallel execution','quantified impact','ownership','leadership','mentorship','teaching','teaching assistant','research assistant','word sense disambiguation','intern','internship','seattle'] },
+      { id: 'projects',   label: 'Projects',   sub: '~/projects',   keys: ['reinforcement learning','rl','multi-agent rl','multi-agent reinforcement learning','marl','multi-agent','deep q-learning','drone swarm','gan','generative adversarial network','recommender system','matrix factorization','nlp','natural language processing','chatbot','slack bot','cli tool','cli tooling','ops tooling','benchmarking','flask','ros','research paper'] },
       { id: 'skills',     label: 'Skills',     sub: '~/skills',     keys: ['rust','java','python','javascript','c++','sql','bash','machine learning','ml','pytorch','tensorflow','transformers','opencv','spacy','scikit-learn','numpy','pandas','tokio','docker','react','django','github actions','ci/cd','aws','lambda','s3','dynamodb','sagemaker','codeguru','aperf','jemalloc','flamegraphs','heap profiling','latency analysis','performance engineering','cryptography','applied crypto','tls','ecdsa','hmac','x.509','x509 certificates','cipher suites'] },
       { id: 'education',  label: 'Education',   sub: '~/education',  keys: ['ms computer science','masters degree','bs computer science','computer science degree','university of washington','university of virginia','uva','uw','new grad','graduating 2026','gpa','gpa 4.0','coursework','deep learning','llm','llm inference','llm inference systems','artificial intelligence','computer vision','machine learning','algorithms','operating systems','databases','cybersecurity','distributed systems coursework','applied mathematics','data science'] },
       { id: 'contact',    label: 'Contact',    sub: '~/contact',    keys: ['contact','email','hire','reach out','get in touch','resume','github','linkedin','message','hello'] },
@@ -1011,6 +1266,9 @@
     }
     function go(id) {
       close();
+      // If the terminal is maximized, render into its middle pane and stay
+      // fullscreen rather than collapsing and scrolling the page.
+      if (window.__term && window.__term.isMax()) { window.__term.show(id); return; }
       const t = document.getElementById(id);
       if (t) t.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
     }
