@@ -266,8 +266,15 @@
     .exp-company { color: var(--accent); }
     .exp-date { color: var(--text-dim); font-size: .82rem; font-family: var(--mono); }
     .exp-loc { color: var(--text-dim); font-size: .85rem; margin-bottom: .5rem; }
-    .exp-item ul { padding-left: 1.25rem; }
-    .exp-item li { margin-bottom: .4rem; color: var(--text-body); font-size: .95rem; }
+    .exp-item ul { padding-left: 1.25rem; max-width: 74ch; }
+    .exp-item li { margin-bottom: .6rem; line-height: 1.55; color: var(--text-body); font-size: .95rem; }
+    .exp-item li strong { color: var(--text); font-weight: 600; }
+    /* Small mono sub-heads grouping a role's bullets, matching the skills headings */
+    .exp-group {
+      font-family: var(--mono); font-size: .72rem; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: .08em; margin: 1rem 0 .4rem;
+    }
+    .exp-group .cat-icon { color: var(--accent); font-weight: 600; }
     .exp-item li::marker { color: var(--accent); }
     /* Compact "Earlier" roll-up for pre-2020 roles */
     .exp-earlier-label {
@@ -277,6 +284,10 @@
     .exp-earlier li { color: var(--text-dim); font-size: .9rem; }
     .exp-earlier .ee-role { color: var(--text-body); font-weight: 500; }
     .exp-earlier .ee-meta { font-family: var(--mono); font-size: .78rem; color: var(--text-dim); }
+    .proj-more { margin-top: 2rem; }
+    .proj-more ul { padding-left: 1.25rem; max-width: 74ch; }
+    .proj-more li { margin-bottom: .5rem; line-height: 1.55; }
+    .proj-more li::marker { color: var(--accent); }
 
     /* ── Projects ── */
     .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
@@ -352,7 +363,9 @@
       transition: opacity .35s ease, transform .35s ease, box-shadow .25s, border-color .25s, color .25s;
     }
     .tool-chip.pop { opacity: 1; transform: translateY(0); }
-    .tool-chip::before { content: '> '; color: var(--accent); opacity: 0; transition: opacity .2s; }
+    /* Absolutely positioned so the hidden prompt doesn't push labels off-center */
+    .tool-chip { position: relative; }
+    .tool-chip::before { content: '>'; position: absolute; left: .18rem; color: var(--accent); opacity: 0; transition: opacity .2s; }
     .tool-chip:hover {
       transform: translateY(-2px); color: var(--text);
       border-color: var(--accent); box-shadow: 0 4px 18px rgba(76,215,135,.12);
@@ -496,6 +509,7 @@
       .ls-hint-desk { display: none; }
       .ls-hint-mob { display: inline; }
       .exp-header { flex-direction: column; }
+      .exp-item { margin-bottom: 2rem; }
       .projects-grid { grid-template-columns: 1fr; }
     }
   </style>
@@ -591,16 +605,27 @@
       <span class="exp-date">Aug 2023 – Present</span>
     </div>
     <p class="exp-loc">Seattle, WA</p>
+    <p class="exp-group"><span class="cat-icon">//</span> migration &amp; rollout</p>
     <ul>
-      <li>Built core authentication APIs for a next-generation distributed auth system in Rust, achieving full feature parity with legacy Java services.</li>
-      <li>Led migration of authentication traffic across 11 global regions to a sharded data architecture with zero customer impact.</li>
-      <li>Cut auth-API latency ~45% under peak load through systematic profiling and allocation, I/O, and framework-overhead optimization. Stood up isolated load-test environments that gate releases on performance regressions.</li>
-      <li>Root-caused a production tail-latency step-up on a tight launch timeline: sampled slow requests to isolate a caller traffic shift behind 99.6% of new slow requests, then traced it to a lock-contended per-request metadata lookup. Computing it once at startup made the affected request path ~96% faster.</li>
-      <li>Implemented end-to-end client authentication between frontend and backend services with SigV4 signing, caching, parallel execution, and shadow-mode rollout.</li>
-      <li>Unblocked a production launch stalled for a month by standing up mutual-TLS (mTLS) service-to-service communication in one week, migrating the transport layer to a Netty-based stack to integrate a new PKI/certificate library with automated cert rotation.</li>
-      <li>Built a security scanner daemon that proactively detects data consistency vulnerabilities, surfacing 50+ issues and now a mandatory validation gate for feature releases.</li>
-      <li>Improved code coverage 15% by designing a unit testing framework with custom macros and factory traits for the Rust codebase, accelerating feature development.</li>
-      <li>Saved 40+ operational hours annually with an AWS Bedrock-powered tool translating natural language into complex database queries.</li>
+      <li><strong>Led migration of authentication traffic across 11 global regions</strong> to a sharded data architecture with zero customer impact.</li>
+      <li><strong>Designed automated rollback</strong> for migrating production traffic to a new auth stack, using the legacy stack as a live statistical control (z-tests, anomaly detection) and metrics verified with six adopting teams.</li>
+      <li><strong>Built core authentication APIs</strong> for a next-generation distributed auth system in Rust, achieving full feature parity with legacy Java services.</li>
+      <li><strong>Designed and built client authentication and authorization</strong> for the new stack (SigV4 signing, caching, parallel execution, shadow-mode rollout), coordinating with the authorization-library team for legacy behavior parity.</li>
+    </ul>
+    <p class="exp-group"><span class="cat-icon">//</span> performance</p>
+    <ul>
+      <li><strong>Cut auth-API latency ~45%</strong> under peak load through systematic profiling and allocation, I/O, and framework-overhead optimization. Stood up isolated load-test environments that gate releases on performance regressions.</li>
+      <li><strong>Root-caused a production tail-latency step-up</strong> on a tight launch timeline, tracing it to a lock-contended per-request lookup; caching it at startup made the affected path ~96% faster.</li>
+    </ul>
+    <p class="exp-group"><span class="cat-icon">//</span> security</p>
+    <ul>
+      <li><strong>Unblocked a production launch</strong> stalled for a month by delivering mutual-TLS (mTLS) service-to-service communication in one week, migrating the transport layer to Netty to integrate a new PKI library with automated certificate rotation.</li>
+      <li><strong>Built a security scanner daemon</strong> that proactively detects data consistency vulnerabilities, surfacing 50+ issues and now a mandatory validation gate for feature releases.</li>
+    </ul>
+    <p class="exp-group"><span class="cat-icon">//</span> tooling &amp; quality</p>
+    <ul>
+      <li><strong>Designed a unit testing framework</strong> with custom macros and factory traits for the Rust codebase, improving code coverage 15% and accelerating feature development.</li>
+      <li><strong>Built an AWS Bedrock-powered tool</strong> translating natural language into complex database queries, saving 40+ operational hours annually.</li>
     </ul>
   </div>
 
@@ -688,27 +713,7 @@
       </div>
     </div>
 
-    <div class="project-card fade-in">
-      <div class="card-top">
-        <h3>Standup Slack Bot</h3>
-        <span class="arrow">↗</span>
-      </div>
-      <p>Multi-channel Slack bot for standup management with channel registration, admin controls, weekday-only rotation scheduling, and configurable announcements.</p>
-      <div class="tags">
-        <span>Python</span><span>Slack API</span><span>DynamoDB</span><span>Lambda</span>
-      </div>
-    </div>
 
-    <div class="project-card fade-in">
-      <div class="card-top">
-        <h3>Gogh Get Paper</h3>
-        <span class="arrow">↗</span>
-      </div>
-      <p>Web app generating wallpapers and landscapes based on artistic style and genre preferences. Led data collection and GAN model development.</p>
-      <div class="tags">
-        <span>Python</span><span>PyTorch</span><span>GAN</span><span>Web</span>
-      </div>
-    </div>
 
     <a href="https://swarm.sites.tjhsst.edu/" target="_blank" rel="noopener" class="project-card fade-in" style="text-decoration:none;color:inherit;">
       <div class="card-top">
@@ -720,51 +725,17 @@
         <span>Python</span><span>RL</span><span>ROS</span><span>Vicon</span>
       </div>
     </a>
-
-    <div class="project-card fade-in">
-      <div class="card-top">
-        <h3>Shop With Space</h3>
-        <span class="arrow">↗</span>
-      </div>
-      <p>HooHacks Best Health Hack. Web app analyzing satellite and streetlight data to inform users about foot traffic at nearby stores.</p>
-      <div class="tags">
-        <span>Flask</span><span>React</span><span>Google APIs</span><span>Python</span>
-      </div>
-    </div>
-
-    <div class="project-card fade-in">
-      <div class="card-top">
-        <h3>MIT Battlecode</h3>
-        <span class="arrow">↗</span>
-      </div>
-      <p>Created a game agent in JavaScript to play a multiplayer strategy game. Placed top 7 in Sprint Round and top 25 in Qualifying Round.</p>
-      <div class="tags">
-        <span>JavaScript</span><span>AI</span><span>Game Theory</span>
-      </div>
-    </div>
-
-    <div class="project-card fade-in">
-      <div class="card-top">
-        <h3>Moolah</h3>
-        <span class="arrow">↗</span>
-      </div>
-      <p>Hackathon project. A natural language chatbot to help users manage budgets through approachable texting interactions using NLP.</p>
-      <div class="tags">
-        <span>Python</span><span>NLP</span><span>Chatbot</span>
-      </div>
-    </div>
-
-    <div class="project-card fade-in">
-      <div class="card-top">
-        <h3>Movies4U</h3>
-        <span class="arrow">↗</span>
-      </div>
-      <p>A recommender system on the MovieLens datasets using matrix factorization by singular value decomposition.</p>
-      <div class="tags">
-        <span>Python</span><span>SVD</span><span>Recommender Systems</span>
-      </div>
-    </div>
-
+  </div>
+  <div class="proj-more fade-in">
+    <p class="exp-earlier-label">More projects</p>
+    <ul class="exp-earlier">
+      <li><span class="ee-role">Standup Slack Bot</span> <span class="ee-meta">Python · Lambda · DynamoDB</span>: multi-channel standup management with rotation scheduling and admin controls.</li>
+      <li><span class="ee-role">Gogh Get Paper</span> <span class="ee-meta">PyTorch · GAN</span>: wallpapers generated from artistic style and genre preferences; led data collection and model development.</li>
+      <li><span class="ee-role">Shop With Space</span> <span class="ee-meta">Flask · React</span>: HooHacks Best Health Hack, using satellite and streetlight data to estimate store foot traffic.</li>
+      <li><span class="ee-role">MIT Battlecode</span> <span class="ee-meta">JavaScript</span>: multiplayer strategy-game agent; top 7 in the Sprint Round, top 25 in Qualifying.</li>
+      <li><span class="ee-role">Moolah</span> <span class="ee-meta">Python · NLP</span>: hackathon chatbot for managing budgets over text.</li>
+      <li><span class="ee-role">Movies4U</span> <span class="ee-meta">Python · SVD</span>: MovieLens recommender using matrix factorization.</li>
+    </ul>
   </div>
 </section>
 
@@ -1215,7 +1186,7 @@
     // grounded in real portfolio content (mined across recruiter personas and
     // fact-checked against overclaiming (nothing here implies a skill Alan lacks).
     const ITEMS = [
-      { id: 'experience', label: 'Experience', sub: '~/experience', keys: ['software engineer','sde ii','backend engineer','aws','amazon','authentication','auth','iam','identity and access management','iam policy evaluation','distributed systems','systems programming','data plane','api development','sharding','sharded data architecture','multi-region','migration','data migration','low latency','tail latency','p50 latency','latency optimization','root cause analysis','production debugging','lock contention','performance optimization','performance tuning','profiling','observability','metrics','concurrency','async runtime','load testing','mtls','mutual tls','tls','pki','sigv4','netty','certificate rotation','certificate management','x.509 certificates','security scanner','vulnerability detection','appsec','apt detection','advanced persistent threat','bedrock','genai','rate limiter','unit testing','test coverage','parallel execution','quantified impact','ownership','leadership','mentorship','teaching','teaching assistant','research assistant','cryptocurrency','blockchain','bitcoin','ethereum','word sense disambiguation','intern','internship','seattle'] },
+      { id: 'experience', label: 'Experience', sub: '~/experience', keys: ['software engineer','sde ii','backend engineer','aws','amazon','authentication','auth','iam','identity and access management','iam policy evaluation','distributed systems','systems programming','data plane','api development','sharding','sharded data architecture','multi-region','migration','data migration','low latency','tail latency','p50 latency','latency optimization','root cause analysis','production debugging','lock contention','rollback','automated rollback','anomaly detection','statistical testing','z-test','traffic migration','authorization','client authorization','cross-team','behavior parity','performance optimization','performance tuning','profiling','observability','metrics','concurrency','async runtime','load testing','mtls','mutual tls','tls','pki','sigv4','netty','certificate rotation','certificate management','x.509 certificates','security scanner','vulnerability detection','appsec','apt detection','advanced persistent threat','bedrock','genai','rate limiter','unit testing','test coverage','parallel execution','quantified impact','ownership','leadership','mentorship','teaching','teaching assistant','research assistant','cryptocurrency','blockchain','bitcoin','ethereum','word sense disambiguation','intern','internship','seattle'] },
       { id: 'projects',   label: 'Projects',   sub: '~/projects',   keys: ['reinforcement learning','rl','multi-agent rl','multi-agent reinforcement learning','marl','multi-agent','deep q-learning','drone swarm','gan','generative adversarial network','recommender system','matrix factorization','nlp','natural language processing','chatbot','slack bot','cli tool','cli tooling','ops tooling','benchmarking','flask','ros','research paper','agentic','ai agents','agent orchestration','langgraph','llm','llm orchestration','bedrock','aws bedrock','claude','vllm','streamlit','evaluator swarm','llm evaluation'] },
       { id: 'skills',     label: 'Skills',     sub: '~/skills',     keys: ['rust','java','python','javascript','c++','c#','csharp','solidity','latex','sql','bash','machine learning','ml','pytorch','tensorflow','transformers','opencv','spacy','scikit-learn','numpy','pandas','tokio','docker','react','django','github actions','ci/cd','aws','lambda','s3','dynamodb','elastic beanstalk','sagemaker','codeguru','aperf','jemalloc','flamegraphs','heap profiling','latency analysis','performance engineering','cryptography','applied crypto','tls','ecdsa','hmac','x.509','x509 certificates','cipher suites','blockchain','bitcoin','ethereum','cryptocurrency','crypto','smart contracts','web3'] },
       { id: 'education',  label: 'Education',   sub: '~/education',  keys: ['ms computer science','masters degree','bs computer science','computer science degree','university of washington','university of virginia','uva','uw','gpa','gpa 4.0','coursework','deep learning','llm','llm inference','llm inference systems','artificial intelligence','computer vision','machine learning','algorithms','operating systems','databases','cybersecurity','distributed systems coursework','applied mathematics','data science'] },
