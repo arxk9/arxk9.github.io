@@ -843,7 +843,7 @@
     <h3>University of Washington</h3>
     <p class="degree">MS in Computer Science & Engineering</p>
     <p class="details">Expected Jun 2027 · GPA: 4.0</p>
-    <button class="courses-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.nextElementSibling.classList.contains('open') ? '▾ Hide Courses' : '▸ Show Courses';">▸ Show Courses</button>
+    <button type="button" class="courses-toggle" aria-expanded="false">▸ Show Courses</button>
     <div class="courses-list">
       <ul>
         <li>Deep Learning</li>
@@ -858,7 +858,7 @@
     <h3>University of Virginia</h3>
     <p class="degree">BS in Computer Science</p>
     <p class="details">May 2023 · GPA: 3.982 · Minors: Applied Mathematics, Data Science</p>
-    <button class="courses-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.nextElementSibling.classList.contains('open') ? '▾ Hide Courses' : '▸ Show Courses';">▸ Show Courses</button>
+    <button type="button" class="courses-toggle" aria-expanded="false">▸ Show Courses</button>
     <div class="courses-list">
       <ul>
         <li>Machine Learning</li>
@@ -889,7 +889,7 @@
     <h3>Thomas Jefferson High School for Science & Technology</h3>
     <p class="degree">Advanced Studies Diploma</p>
     <p class="details">GPA: 4.5 · SAT: 1600/1600</p>
-    <button class="courses-toggle" onclick="this.nextElementSibling.classList.toggle('open'); this.textContent = this.nextElementSibling.classList.contains('open') ? '▾ Hide Courses' : '▸ Show Courses';">▸ Show Courses</button>
+    <button type="button" class="courses-toggle" aria-expanded="false">▸ Show Courses</button>
     <div class="courses-list">
       <ul>
         <li>Artificial Intelligence</li>
@@ -1018,6 +1018,15 @@
     }));
   }
 
+  // Course list toggles (delegated so clones in the maximized pane work too)
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('.courses-toggle');
+    if (!t) return;
+    const open = t.nextElementSibling.classList.toggle('open');
+    t.setAttribute('aria-expanded', String(open));
+    t.textContent = open ? '▾ Hide Courses' : '▸ Show Courses';
+  });
+
   // Type-on effect for the hero command (show final text instantly if reduced motion)
   (() => {
     const el = document.getElementById('type-cmd');
@@ -1096,7 +1105,11 @@
     dot.addEventListener('click', open);
     stay.addEventListener('click', close);
     go.addEventListener('click', escalate);
-    quit.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); close(); } });
+    quit.addEventListener('keydown', (e) => {
+      // stopPropagation keeps Esc from also restoring a maximized terminal.
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); }
+      else if (e.key === 'Tab') { e.preventDefault(); (document.activeElement === stay ? go : stay).focus(); }
+    });
   })();
 
   // Green-dot "maximize": expand the hero terminal into a two-pane "app". The
@@ -1204,7 +1217,7 @@
       { id: 'experience', label: 'Experience', sub: '~/experience', keys: ['software engineer','sde ii','backend engineer','aws','amazon','authentication','auth','iam','identity and access management','iam policy evaluation','distributed systems','systems programming','data plane','api development','sharding','sharded data architecture','multi-region','migration','data migration','low latency','tail latency','p50 latency','latency optimization','performance optimization','performance tuning','profiling','observability','metrics','concurrency','async runtime','load testing','mtls','mutual tls','tls','pki','sigv4','netty','certificate rotation','certificate management','x.509 certificates','security scanner','vulnerability detection','appsec','apt detection','advanced persistent threat','bedrock','genai','rate limiter','unit testing','test coverage','parallel execution','quantified impact','ownership','leadership','mentorship','teaching','teaching assistant','research assistant','cryptocurrency','blockchain','bitcoin','ethereum','word sense disambiguation','intern','internship','seattle'] },
       { id: 'projects',   label: 'Projects',   sub: '~/projects',   keys: ['reinforcement learning','rl','multi-agent rl','multi-agent reinforcement learning','marl','multi-agent','deep q-learning','drone swarm','gan','generative adversarial network','recommender system','matrix factorization','nlp','natural language processing','chatbot','slack bot','cli tool','cli tooling','ops tooling','benchmarking','flask','ros','research paper','agentic','ai agents','agent orchestration','langgraph','llm','llm orchestration','bedrock','aws bedrock','claude','vllm','streamlit','evaluator swarm','llm evaluation'] },
       { id: 'skills',     label: 'Skills',     sub: '~/skills',     keys: ['rust','java','python','javascript','c++','c#','csharp','solidity','latex','sql','bash','machine learning','ml','pytorch','tensorflow','transformers','opencv','spacy','scikit-learn','numpy','pandas','tokio','docker','react','django','github actions','ci/cd','aws','lambda','s3','dynamodb','elastic beanstalk','sagemaker','codeguru','aperf','jemalloc','flamegraphs','heap profiling','latency analysis','performance engineering','cryptography','applied crypto','tls','ecdsa','hmac','x.509','x509 certificates','cipher suites','blockchain','bitcoin','ethereum','cryptocurrency','crypto','smart contracts','web3'] },
-      { id: 'education',  label: 'Education',   sub: '~/education',  keys: ['ms computer science','masters degree','bs computer science','computer science degree','university of washington','university of virginia','uva','uw','new grad','graduating 2026','gpa','gpa 4.0','coursework','deep learning','llm','llm inference','llm inference systems','artificial intelligence','computer vision','machine learning','algorithms','operating systems','databases','cybersecurity','distributed systems coursework','applied mathematics','data science'] },
+      { id: 'education',  label: 'Education',   sub: '~/education',  keys: ['ms computer science','masters degree','bs computer science','computer science degree','university of washington','university of virginia','uva','uw','gpa','gpa 4.0','coursework','deep learning','llm','llm inference','llm inference systems','artificial intelligence','computer vision','machine learning','algorithms','operating systems','databases','cybersecurity','distributed systems coursework','applied mathematics','data science'] },
       { id: 'contact',    label: 'Contact',    sub: '~/contact',    keys: ['contact','email','hire','reach out','get in touch','resume','github','linkedin','message','hello'] },
     ];
     let results = ITEMS.map(it => ({ id: it.id, label: it.label, sub: it.sub }));
@@ -1293,7 +1306,7 @@
     document.querySelectorAll('[data-open-cmdk]').forEach(el => el.addEventListener('click', open));
 
     cmdk.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') { e.preventDefault(); close(); }
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); }
       else if (e.key === 'ArrowDown') { e.preventDefault(); if (results.length) { sel = (sel + 1) % results.length; paint(); } }
       else if (e.key === 'ArrowUp') { e.preventDefault(); if (results.length) { sel = (sel - 1 + results.length) % results.length; paint(); } }
       else if (e.key === 'Enter') { e.preventDefault(); if (results[sel]) go(results[sel].id); }
@@ -1301,7 +1314,11 @@
     });
 
     document.addEventListener('keydown', (e) => {
-      if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); cmdk.hidden ? open() : close(); }
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        if (!document.getElementById('quit').hidden) return;
+        cmdk.hidden ? open() : close();
+      }
     });
   })();
 
